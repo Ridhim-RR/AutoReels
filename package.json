@@ -3,9 +3,11 @@
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
-   "workspaces": ["apps/*"],
+  "workspaces": [
+    "apps/*"
+  ],
   "scripts": {
-     "dev": "turbo run dev",
+    "dev": "turbo run dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "echo \"Error: no test specified\" && exit 1"
@@ -16,5 +18,8 @@
   "packageManager": "pnpm@10.26.2",
   "devDependencies": {
     "turbo": "^2.7.4"
+  },
+  "dependencies": {
+    "dotenv": "^17.2.3"
   }
 }

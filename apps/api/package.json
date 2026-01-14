@@ -1,0 +1,22 @@
+{
+  "name": "autoreels",
+  "version": "1.0.0",
+  "description": "AutoReels is an AI-powered tool that turns your long videos into ready-to-post reels automatically",
+  "license": "ISC",
+  "author": "Ridhim Singh Raizada",
+  "type": "commonjs",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "node index.js",
+    "build": "echo 'build api'"
+  },
+  "dependencies": {
+    "express": "^5.2.1",
+    "multer": "^2.0.2"
+  },
+  "devDependencies": {
+    "@types/express": "^5.0.6",
+    "@types/multer": "^2.0.0"
+  }
+}

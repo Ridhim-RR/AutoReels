@@ -6,7 +6,7 @@ import fs from "node:fs";
 import { processVideo } from "./src/pipeline/process";
 
 const app: Express = express();
-const port = 8000;
+const port = process.env.PORT || 8000;
 
 // Create upload directory
 const UPLOAD_DIR = "uploads";
@@ -47,7 +47,7 @@ app.get("/health", (_req, res) => {
 });
 
 // Upload and process video
-app.post("/process", upload.single("video"), async (req, res) => {
+app.post("/api/v1/process", upload.single("video"), async (req, res) => {
   if (!req.file) {
     return res.status(400).json({ error: "No video file uploaded" });
   }
@@ -57,7 +57,10 @@ app.post("/process", upload.single("video"), async (req, res) => {
 
   try {
     console.log(`\n🎬 Starting job ${jobId}: ${req.file.originalname}`);
-
+     // Create temp directory structure for processing
+    const tempJobDir = `temp/${jobId}`;
+    const chunksDir = `${tempJobDir}/chunks`;
+    fs.mkdirSync(chunksDir, { recursive: true });
     const result = await processVideo(videoPath, {
       chunksDir: `temp/${jobId}/chunks`,
       outputDir: `${OUTPUT_DIR}/${jobId}`,

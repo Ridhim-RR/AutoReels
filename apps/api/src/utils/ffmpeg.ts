@@ -1,7 +1,8 @@
 import { spawn } from "node:child_process";
 import ffmpegPath from "ffmpeg-static";
+import { existsSync } from "node:fs";
 
-const FFmpeg = ffmpegPath || "ffmpeg";
+const FFmpeg = ffmpegPath && existsSync(ffmpegPath) ? ffmpegPath : "ffmpeg";
 
 export function runFFmpeg(
   args: string[],

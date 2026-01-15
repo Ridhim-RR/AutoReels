@@ -8,6 +8,8 @@
   ],
   "scripts": {
     "dev": "turbo run dev",
+    "dev:api": "pnpm --filter autoreels dev",
+    "dev:web": "pnpm --filter auto-reels dev",
     "build": "turbo run build",
     "lint": "turbo run lint",
     "test": "echo \"Error: no test specified\" && exit 1"

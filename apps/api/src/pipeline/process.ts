@@ -8,6 +8,7 @@ import { splitVideo } from "./split";
 import { transcribe } from "./transcribe";
 import { scoreChunk, pickTopChunks, ChunkScore } from "./scoring";
 import { getChunks } from "../utils/chunk";
+import { hasAudio } from "../utils/hasAudio";
 
 export interface ProcessResult {
   finalVideos: string[];
@@ -66,13 +67,26 @@ export async function processVideo(
     const baseName = chunk.replace(/\.mp4$/, "");
     const audioPath = `${baseName}.wav`;
 
-    // 2️⃣ Extract audio
-    console.log(`  → Extracting audio: ${chunk}`);
-    await extractAudio(chunk, baseName);
+    // Check if chunk has audio
+    const audioExists = await hasAudio(chunk);
+    let srtPath: string | null = null;
 
-    // 3️⃣ Transcribe
-    console.log(`  → Transcribing: ${audioPath}`);
-    const srtPath = await transcribe(audioPath);
+    if (audioExists) {
+      try {
+        // 2️⃣ Extract audio
+        console.log(`  → Extracting audio: ${chunk}`);
+        await extractAudio(chunk, baseName);
+
+        // 3️⃣ Transcribe
+        console.log(`  → Transcribing: ${audioPath}`);
+        srtPath = await transcribe(audioPath);
+      } catch (err) {
+        console.log(`  ⚠ Audio extraction/transcription failed for: ${chunk} (skipping)`);
+        srtPath = null;
+      }
+    } else {
+      console.log(`  ⚠ No audio in: ${chunk} (skipping transcription)`);
+    }
 
     // 4️⃣ Score
     console.log(`  → Scoring: ${chunk}`);

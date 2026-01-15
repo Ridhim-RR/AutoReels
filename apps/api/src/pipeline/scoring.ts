@@ -11,7 +11,7 @@ export interface ChunkScore {
 /**
  * Scores a video chunk based on its transcription quality.
  * Higher scores indicate better content for reels.
- * 
+ *
  * Scoring factors:
  * - Word density (words per second)
  * - Total word count
@@ -19,8 +19,17 @@ export interface ChunkScore {
  */
 export async function scoreChunk(
   chunkPath: string,
-  srtPath: string
+  srtPath: string | null
 ): Promise<ChunkScore> {
+  if (!srtPath) {
+    return {
+      chunk: chunkPath,
+      srtPath: "",
+      score: 0,
+      wordCount: 0,
+      duration: 0,
+    };
+  }
   const segments = parseSRT(srtPath);
 
   const wordCount = countWords(segments);
@@ -73,14 +82,19 @@ function calculateScore(
   const wordCountScore = Math.min(wordCount / 50, 1) * 30; // Max 30 points
 
   // Factor 3: Coverage (how much of the duration has speech)
-  const speechDuration = segments.reduce((sum, seg) => sum + (seg.end - seg.start), 0);
+  const speechDuration = segments.reduce(
+    (sum, seg) => sum + (seg.end - seg.start),
+    0
+  );
   const coverageRatio = speechDuration / duration;
   const coverageScore = coverageRatio * 20; // Max 20 points
 
   // Factor 4: Segment count (more segments = more dynamic content)
   const segmentScore = Math.min(segments.length / 10, 1) * 10; // Max 10 points
 
-  return Math.round(densityScore + wordCountScore + coverageScore + segmentScore);
+  return Math.round(
+    densityScore + wordCountScore + coverageScore + segmentScore
+  );
 }
 
 /**
@@ -90,9 +104,7 @@ export function pickTopChunks(
   scores: ChunkScore[],
   count: number = 3
 ): ChunkScore[] {
-  return [...scores]
-    .sort((a, b) => b.score - a.score)
-    .slice(0, count);
+  return [...scores].sort((a, b) => b.score - a.score).slice(0, count);
 }
 
 /**

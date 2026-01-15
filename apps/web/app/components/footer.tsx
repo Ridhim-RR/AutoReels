@@ -39,7 +39,7 @@ const Footer: React.FC = () => {
           reserved.
         </p>
         <p className="text-sm mt-2 text-gray-500">
-          Made with &hearts; by <div>Ridhim Singh Raizada</div>
+          Made with &hearts; by <span>Ridhim Singh Raizada</span>
         </p>
       </div>
     </footer>

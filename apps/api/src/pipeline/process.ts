@@ -9,6 +9,7 @@ import { transcribe } from "./transcribe";
 import { scoreChunk, pickTopChunks, ChunkScore } from "./scoring";
 import { getChunks } from "../utils/chunk";
 import { hasAudio } from "../utils/hasAudio";
+import type { ReelStyle } from "@autoreels/shared";
 
 export interface ProcessResult {
   finalVideos: string[];
@@ -32,12 +33,14 @@ export async function processVideo(
     chunksDir?: string;
     outputDir?: string;
     topCount?: number;
+    reelStyle?: ReelStyle;
   } = {}
 ): Promise<ProcessResult> {
   const {
     chunksDir = "temp/chunks",
     outputDir = "output",
     topCount = 3,
+    reelStyle = "auto",
   } = options;
 
   // -----------------------------

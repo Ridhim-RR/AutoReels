@@ -4,6 +4,7 @@ import multer from "multer";
 import path from "node:path";
 import fs from "node:fs";
 import { processVideo } from "./src/pipeline/process";
+import type { ReelStyle } from "@autoreels/shared";
 import cors from "cors";
 
 const app: Express = express();
@@ -77,10 +78,15 @@ app.post("/api/v1/process", upload.single("video"), async (req, res) => {
     const tempJobDir = `temp/${jobId}`;
     const chunksDir = `${tempJobDir}/chunks`;
     fs.mkdirSync(chunksDir, { recursive: true });
+
+    // For now this is just "structure": we accept a style value but don't change behavior yet.
+    const reelStyle = (req.query.style ?? "auto") as ReelStyle;
+
     const result = await processVideo(videoPath, {
       chunksDir: `temp/${jobId}/chunks`,
       outputDir: `${OUTPUT_DIR}/${jobId}`,
       topCount: Number(req.query.count) || 3,
+      reelStyle,
     });
 
     res.status(200).json({

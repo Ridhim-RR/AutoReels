@@ -1,12 +1,28 @@
 import "dotenv/config";
-import express, {Express} from "express";
+import express, { Express } from "express";
 import multer from "multer";
 import path from "node:path";
 import fs from "node:fs";
 import { processVideo } from "./src/pipeline/process";
+import cors from "cors";
 
 const app: Express = express();
 const port = process.env.PORT || 8000;
+const allowedOrigins = ["http://localhost:3000","http://localhost:8000"];
+
+const corsOptions = {
+  origin: (
+    requestOrigin: string | undefined,
+    callback: (err: Error | null, origin?: boolean) => void
+  ) => {
+    if (!requestOrigin || allowedOrigins.indexOf(requestOrigin) === 1) {
+      callback(null, true);
+    } else {
+      callback(new Error(`Not allowed by CORS ${requestOrigin}`));
+    }
+  },
+};
+app.use(cors(corsOptions));
 
 // Create upload directory
 const UPLOAD_DIR = "uploads";
@@ -57,7 +73,7 @@ app.post("/api/v1/process", upload.single("video"), async (req, res) => {
 
   try {
     console.log(`\n🎬 Starting job ${jobId}: ${req.file.originalname}`);
-     // Create temp directory structure for processing
+    // Create temp directory structure for processing
     const tempJobDir = `temp/${jobId}`;
     const chunksDir = `${tempJobDir}/chunks`;
     fs.mkdirSync(chunksDir, { recursive: true });
@@ -89,10 +105,17 @@ app.post("/api/v1/process", upload.single("video"), async (req, res) => {
 app.use("/output", express.static(OUTPUT_DIR));
 
 // Error handler
-app.use((err: Error, _req: express.Request, res: express.Response, _next: express.NextFunction) => {
-  console.error(err);
-  res.status(500).json({ error: err.message });
-});
+app.use(
+  (
+    err: Error,
+    _req: express.Request,
+    res: express.Response,
+    _next: express.NextFunction
+  ) => {
+    console.error(err);
+    res.status(500).json({ error: err.message });
+  }
+);
 
 app.listen(port, () => {
   console.log(`🚀 AutoReels API running at http://localhost:${port}`);

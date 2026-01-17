@@ -124,10 +124,16 @@ export async function processVideo(
     console.log(`  → Cropping to vertical: ${chunk}`);
     await cropVertical(chunk, verticalPath);
 
-    console.log(`  → Burning captions: ${verticalPath}`);
-    await burnCaptions(verticalPath, srtPath, finalPath);
-
-    finalVideos.push(finalPath);
+    // Only burn captions if we have a valid SRT file
+    if (srtPath && fs.existsSync(srtPath)) {
+      console.log(`  → Burning captions: ${verticalPath}`);
+      await burnCaptions(verticalPath, srtPath, finalPath);
+      finalVideos.push(finalPath);
+    } else {
+      console.log(`  ⚠ No captions available, using vertical crop as final`);
+      fs.renameSync(verticalPath, finalPath);
+      finalVideos.push(finalPath);
+    }
     console.log(`  ✓ Created: ${finalPath}`);
   }
 

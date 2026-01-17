@@ -19,6 +19,7 @@
   "license": "ISC",
   "packageManager": "pnpm@10.26.2",
   "devDependencies": {
+    "@types/cors": "^2.8.19",
     "turbo": "^2.7.4"
   },
   "dependencies": {
